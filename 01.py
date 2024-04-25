@@ -2,7 +2,6 @@ import shutil
 import sqlite3
 from tabulate import tabulate
 from unidecode import unidecode
-import os
 
 # Función para obtener el idioma válido del usuario
 
@@ -25,15 +24,12 @@ def obtener_idioma_valido():
 
 # Nombre de la base de datos existente
 nombre_base_datos = 'canciones.db'
-nombre_base_datos_copia = 'canciones_copia.db'
 
-# Verificar si la base de datos de copia ya existe
-if not os.path.exists(nombre_base_datos_copia):
-    # Hacer una copia de la base de datos original para trabajar con ella
-    shutil.copyfile(nombre_base_datos, nombre_base_datos_copia)
+# Hacer una copia de la base de datos original para trabajar con ella
+shutil.copyfile('canciones.db', 'canciones_copia.db')
 
 # Conectarse a la base de datos
-conexion = sqlite3.connect(nombre_base_datos_copia)
+conexion = sqlite3.connect('canciones_copia.db')
 cursor = conexion.cursor()
 
 # Función para mostrar la tabla de canciones
@@ -56,15 +52,17 @@ columnas = cursor.fetchall()
 columnas_existentes = [columna[1] for columna in columnas]
 if 'idioma' not in columnas_existentes:
     cursor.execute('ALTER TABLE canciones ADD COLUMN idioma TEXT')
+    conexion.commit()  # Confirmar los cambios
 
 # Agregar la columna "continente" a la tabla "canciones" si no existe
 if 'continente' not in columnas_existentes:
     cursor.execute('ALTER TABLE canciones ADD COLUMN continente TEXT')
+    conexion.commit()  # Confirmar los cambios
 
 # Menú principal
 while True:
     print("\nMENU:")
-    print("""1.Mostrar tabla extraida modificada con columnas de idioma y continente""")
+    print("1. Añadir columnas de idioma y continenete a la tabla inicial")
     print("2. Ingresar idioma registro por registro")
     print("3. Salir")
 
