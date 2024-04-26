@@ -23,6 +23,20 @@ def obtener_idioma_valido():
             print("Por favor, ingrese un idioma válido.")
 
 
+def obtener_continente_valido():
+    continentes_validos = [
+        'america del sur', 'america del norte', 'europa', 'asia', 'africa', 'oceania']
+    while True:
+        continente = unidecode(input(
+            "Ingrese el continente (América del Sur, América del Norte, Europa, Asia, África, Oceanía, o 'parar' para volver al menú): ").lower())
+        if continente == 'parar':
+            return None
+        if continente in continentes_validos:
+            return continente
+        else:
+            print("Por favor, ingrese un continente válido.")
+
+
 # Nombre de la base de datos existente
 nombre_base_datos = 'canciones.db'
 nombre_base_datos_copia = 'canciones_copia.db'
@@ -64,9 +78,10 @@ if 'continente' not in columnas_existentes:
 # Menú principal
 while True:
     print("\nMENU:")
-    print("""1.Mostrar tabla extraida modificada con columnas de idioma y continente""")
+    print("1. Mostrar tabla extraida modificada con columnas de idioma y continente")
     print("2. Ingresar idioma registro por registro")
-    print("3. Salir")
+    print("3. Ingresar continente registro por registro")
+    print("4. Salir")
 
     opcion = input("Ingrese el número de la opción que desea: ")
 
@@ -94,10 +109,28 @@ while True:
         else:
             print("No hay registros sin idioma para completar.")
     elif opcion == "3":
+        cursor.execute('SELECT * FROM canciones WHERE continente IS NULL')
+        filas = cursor.fetchall()
+        if filas:
+            for registro in filas:
+                id_registro, cancion, interprete, año, semanas, pais, idioma, continente = registro
+                print(f"\nCanción: {cancion}")
+                print(f"Intérprete: {interprete}")
+                print(f"Año: {año}")
+                print(f"Semanas: {semanas}")
+                print(f"País: {pais}")
+                continente_ingresado = obtener_continente_valido()
+                if continente_ingresado:
+                    cursor.execute(
+                        'UPDATE canciones SET continente = ? WHERE id = ?', (continente_ingresado, id_registro))
+                    conexion.commit()
+                else:
+                    break
+            print("\nSe han ingresado los continentes correctamente.")
+        else:
+            print("No hay registros sin continente para completar.")
+    elif opcion == "4":
         print("¡Hasta luego!")
         break
     else:
         print("Opción inválida. Por favor, ingrese un número válido.")
-
-# Cerrar la conexión con la base de datos
-conexion.close()
