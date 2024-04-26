@@ -180,11 +180,47 @@ while True:
     if opcion == "1":
         mostrar_tabla_canciones()
     elif opcion == "2":
-        # Código para ingresar idioma registro por registro
-        pass
+        cursor.execute('SELECT * FROM canciones WHERE idioma IS NULL')
+        filas = cursor.fetchall()
+        if filas:
+            for registro in filas:
+                id_registro, cancion, interprete, año, semanas, pais, idioma, continente = registro
+                print(f"\nCanción: {cancion}")
+                print(f"Intérprete: {interprete}")
+                print(f"Año: {año}")
+                print(f"Semanas: {semanas}")
+                print(f"País: {pais}")
+                idioma_ingresado = obtener_idioma_valido()
+                if idioma_ingresado:
+                    cursor.execute(
+                        'UPDATE canciones SET idioma = ? WHERE id = ?', (idioma_ingresado, id_registro))
+                    conexion.commit()
+                else:
+                    break
+            print("\nSe han ingresado los idiomas correctamente.")
+        else:
+            print("No hay registros sin idioma para completar.")
     elif opcion == "3":
-        # Código para ingresar continente registro por registro
-        pass
+        cursor.execute('SELECT * FROM canciones WHERE continente IS NULL')
+        filas = cursor.fetchall()
+        if filas:
+            for registro in filas:
+                id_registro, cancion, interprete, año, semanas, pais, idioma, continente = registro
+                print(f"\nCanción: {cancion}")
+                print(f"Intérprete: {interprete}")
+                print(f"Año: {año}")
+                print(f"Semanas: {semanas}")
+                print(f"País: {pais}")
+                continente_ingresado = obtener_continente_valido()
+                if continente_ingresado:
+                    cursor.execute(
+                        'UPDATE canciones SET continente = ? WHERE id = ?', (continente_ingresado, id_registro))
+                    conexion.commit()
+                else:
+                    break
+            print("\nSe han ingresado los continentes correctamente.")
+        else:
+            print("No hay registros sin continente para completar.")
     elif opcion == "4":
         # Submenú para consultas adicionales
         while True:
